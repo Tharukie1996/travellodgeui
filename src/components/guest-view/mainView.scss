@@ -1,13 +1,18 @@
 .trl-main-view {
-    background-image: url(../images/hotel.png);
+    background-image: url(../images/hotel1.jpeg);
     min-height: 1024px;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
 }
 
+.trl-search-form {
+    padding: 10px 0px 10px 0px;
+    background: rgba(255,255, 255, 0.5); 
+}
+
 .trl-search-form label {
-    padding: 100px 10px 20px 30px;
+    padding: 20px 10px 20px 30px;
     font-size: large;
     font-weight: 900;
 }
@@ -37,4 +42,8 @@
 .trl-search-form-gcount {
     max-width: 60px;
     margin-right: 30px;
+}
+
+.trl-empty-space {
+    padding: 100px;
 }

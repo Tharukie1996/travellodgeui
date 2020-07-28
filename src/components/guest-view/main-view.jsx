@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import Header from './header';
+import { useHistory } from 'react-router-dom'
 import './mainView.scss';
 
 export const MainView = () => {
 
+    const history = useHistory();
+
     const [location, setLocation] = useState("Cambridge");
-    const [checkindate, setCheckindate] = useState(new Date());
-    const [checkoutdate, setCheckoutdate] = useState(new Date());
+    const [checkindate, setCheckindate] = useState(null);
+    const [checkoutdate, setCheckoutdate] = useState(null);
     const [guestCount, setGuestCount] = useState(0);
 
     const handleLocationChange = (e) => {
@@ -22,30 +25,58 @@ export const MainView = () => {
         setGuestCount(e.target.value);
     }
 
+    const validateCheckinDate = () => {
+        let today = new Date();
+        let dd = today.getDate();
+        let mm = today.getMonth() + 1;
+        let yyyy = today.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd
+        }
+        if (mm < 10) {
+            mm = '0' + mm
+        }
+        return yyyy + '-' + mm + '-' + dd;
+    }
+
+    const validateCheckoutDate = () => {
+        return checkindate !== null ? checkindate : validateCheckinDate();
+    }
+
+    const validateAllFields = () => {
+        return location !== null && checkindate !== null && checkoutdate !== null && guestCount !== 0;
+    }
+
     const onSearchClicked = () => {
-        const headers = {'Access-Control-Allow-Origin': '*'};
-        fetch('http://localhost:8080/get?destination='+location, {headers})
-        .then(response => response.json());
+        if (validateAllFields()) {
+            const headers = { 'Access-Control-Allow-Origin': '*' };
+            fetch('http://ec2-3-18-107-155.us-east-2.compute.amazonaws.com:8080/get?destination=' + location, { headers })
+                .then(response => response.json()).then(data => console.log(data));
+            history.push({
+                pathname: `hotels`
+            });
+        }
     }
 
     return (
         <>
-        <div className="trl-main-view">
-        <Header></Header>
-            <form className="trl-search-form">
-                <label className="trl-search-form-loc">Location</label>
-                <select onChange={handleLocationChange}>
-                    <option value="Cambridge">Cambridge</option>
-                    <option value="London">London</option>
-                </select>
-                <label>Check In</label>
-                <input type="date" id="checkin" name="checkin" onChange={handleCheckInDateChange}></input>
-                <label>Check Out</label>
-                <input type="date" id="checkout" name="checkout" onChange={handleCheckOutDateChange}></input>
-                <label>Guest Count</label>
-                <input  className="trl-search-form-gcount" type="number" id="guest-count" onChange={handleGuestCountChange}></input>
-                <button className="search-btn" id="form-search-btn" type="button" onClick={onSearchClicked}>Search</button>
-            </form>
+            <div className="trl-main-view">
+                <Header></Header>
+                <div className="trl-empty-space"></div>
+                <form className="trl-search-form">
+                    <label className="trl-search-form-loc">Location</label>
+                    <select onChange={handleLocationChange}>
+                        <option value="Cambridge">Cambridge</option>
+                        <option value="London">London</option>
+                    </select>
+                    <label>Check In</label>
+                    <input type="date" id="checkindate" name="checkin" min={validateCheckinDate()} onChange={handleCheckInDateChange}></input>
+                    <label>Check Out</label>
+                    <input type="date" id="checkoutdate" name="checkout" min={validateCheckoutDate()} onChange={handleCheckOutDateChange}></input>
+                    <label>Guest Count</label>
+                    <input className="trl-search-form-gcount" type="number" id="guest-count" min={0} onChange={handleGuestCountChange}></input>
+                    <button className="search-btn" id="form-search-btn" type="button" onClick={onSearchClicked}>Search</button>
+                </form>
             </div>
         </>
     )

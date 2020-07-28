@@ -4,7 +4,7 @@ import './header.scss';
 export const Header = () => {
     return (
         <header className="trl-header">
-            <h1>TravelLodge</h1>
+            <h1 className="trl-h">TravelLodge</h1>
         </header>
     )
 }
